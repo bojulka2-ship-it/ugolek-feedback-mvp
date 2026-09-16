@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кофейня Уголёк — отзывы</title>
+<style>
+  :root {
+    --brown: #4e342e;
+    --brown-dark: #3e2723;
+    --orange: #e67e22;
+    --green: #2e7d32;
+    --bg: #faf6f1;
+    --card: #ffffff;
+    --text: #3a2e26;
+    --muted: #7a6a5f;
+    --border: #e8ddd2;
+    --error: #c62828;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .page { max-width: 720px; margin: 0 auto; padding: 16px; }
+  header {
+    background: var(--brown);
+    color: #fff;
+    text-align: center;
+    padding: 18px 12px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+  }
+  header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.85; }
+  main { padding: 16px 0 40px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  h2 { margin: 0 0 12px; font-size: 1.05rem; color: var(--brown-dark); }
+  fieldset { border: none; margin: 0 0 14px; padding: 0; }
+  legend { font-weight: 600; margin-bottom: 8px; }
+  .star-inputs { display: flex; gap: 4px; margin-top: 4px; }
+  .star-option {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    padding: 4px 2px;
+  }
+  .star-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .star-icon {
+    font-size: 2.1rem;
+    line-height: 1;
+    color: var(--border);
+    transition: color .12s ease, transform .12s ease;
+  }
+  .star-option:hover .star-icon,
+  .star-option:has(~ .star-option:hover) .star-icon {
+    color: var(--orange);
+    transform: scale(1.12);
+  }
+  .star-option:has(input:checked) .star-icon,
+  .star-option:has(~ .star-option:has(input:checked)) .star-icon {
+    color: var(--orange);
+  }
+  .star-option:has(input:focus-visible) .star-icon {
+    outline: 2px solid var(--orange);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .star-option:active .star-icon { transform: scale(.9); }
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  textarea { min-height: 90px; resize: vertical; }
+  label .hint { color: var(--muted); font-size: 0.8rem; font-weight: 400; }
+  button {
+    width: 100%;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  button:hover:not(:disabled) {
+    background: #d96c13;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(230, 126, 34, .35);
+  }
+  button:active:not(:disabled) {
+    transform: translateY(0) scale(.97);
+    box-shadow: 0 2px 6px rgba(230, 126, 34, .3);
+  }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .message { margin-top: 12px; padding: 10px 12px; border-radius: 8px; display: none; font-size: 0.9rem; }
+  .message.show { display: block; }
+  .message.error { background: #fdecea; color: var(--error); border: 1px solid #f5c6c0; }
+  .message.success { background: #e8f5e9; color: var(--green); border: 1px solid #c8e6c9; }
+  .layout-warn { color: #e67e22; font-size: 0.8rem; margin-top: 4px; display: none; line-height: 1.4; }
+  .layout-warn.show { display: block; }
+  .hidden { display: none; }
+  #empty {
+    color: var(--muted);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+  .review {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .review .head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; flex-wrap: wrap; margin-bottom: 6px;
+  }
+  .review .stars-small { color: var(--orange); letter-spacing: 2px; font-size: 0.95rem; }
+  .review .date { color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
+  .review .menu { font-size: 0.9rem; margin: 2px 0; }
+  .review .menu b { color: var(--brown-dark); font-weight: 600; }
+  .review .comment { margin: 4px 0 0; white-space: pre-wrap; word-break: break-word; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Кофейня Уголёк</h1>
+  <p>Оставьте отзыв о визите</p>
+</header>
+<main class="page">
+  <section class="card" aria-labelledby="title-form">
+    <h2 id="title-form">Форма обратной связи</h2>
+    <form id="reviewForm" novalidate>
+      <fieldset>
+        <legend>Оценка визита</legend>
+        <div class="star-inputs" role="radiogroup" aria-label="Оценка визита">
+          <label class="star-option"><input type="radio" name="rating" value="1"><span class="star-icon" aria-hidden="true">★</span><span class="visually-hidden">1 звезда</span></label>
+          <label class="star-option"><input type="radio" name="rating" value="2"><span class="star-icon" aria-hidden="true">★</span><span class="visually-hidden">2 звезды</span></label>
+          <label class="star-option"><input type="radio" name="rating" value="3"><span class="star-icon" aria-hidden="true">★</span><span class="visually-hidden">3 звезды</span></label>
+          <label class="star-option"><input type="radio" name="rating" value="4"><span class="star-icon" aria-hidden="true">★</span><span class="visually-hidden">4 звезды</span></label>
+          <label class="star-option"><input type="radio" name="rating" value="5"><span class="star-icon" aria-hidden="true">★</span><span class="visually-hidden">5 звезд</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Что понравилось из меню <span class="hint">(необязательно)</span></legend>
+        <input type="text" name="menu" id="menu" maxlength="100" placeholder="Например, капучино, чизкейк">
+        <div class="layout-warn" id="menuWarn" role="status"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Комментарий <span class="hint">(необязательно)</span></legend>
+        <textarea name="comment" id="comment" maxlength="500" placeholder="Расскажите подробнее о визите"></textarea>
+        <div class="layout-warn" id="commentWarn" role="status"></div>
+      </fieldset>
+
+      <button type="submit" id="submitBtn">Оставить отзыв</button>
+      <div class="message error" id="formError" role="alert"></div>
+      <div class="message success" id="formSuccess"></div>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="title-list">
+    <h2 id="title-list">Отзывы гостей</h2>
+    <div id="listError" class="message error" role="alert"></div>
+    <div id="empty" class="hidden">Отзывов пока нет. Будьте первым!</div>
+    <div id="reviews"></div>
+  </section>
+</main>
+
+<script>
+  var form = document.getElementById('reviewForm');
+  var submitBtn = document.getElementById('submitBtn');
+  var formError = document.getElementById('formError');
+  var formSuccess = document.getElementById('formSuccess');
+  var reviewsEl = document.getElementById('reviews');
+  var emptyEl = document.getElementById('empty');
+  var listErrorEl = document.getElementById('listError');
+
+  function show(el) { el.classList.add('show'); }
+  function hide(el) { el.classList.remove('show'); }
+  function setText(el, text) { el.textContent = text; }
+
+  function selectedRating() {
+    var checked = document.querySelector('input[name="rating"]:checked');
+    return checked ? Number(checked.value) : 0;
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function formatDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    return dd + '.' + mm + '.' + d.getFullYear();
+  }
+
+  function starsHtml(n) {
+    var out = '';
+    for (var i = 1; i <= 5; i++) {
+      out += i <= n ? '★' : '☆';
+    }
+    return out;
+  }
+
+  function renderReviews(reviews) {
+    reviewsEl.innerHTML = '';
+    if (!reviews.length) {
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+    emptyEl.classList.add('hidden');
+    var sorted = reviews.slice().sort(function (a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    sorted.forEach(function (r) {
+      var item = document.createElement('div');
+      item.className = 'review';
+
+      var head = document.createElement('div');
+      head.className = 'head';
+      head.innerHTML = '<span class="stars-small">' + starsHtml(r.rating) + '</span>' +
+        '<span class="date">' + esc(formatDate(r.createdAt)) + '</span>';
+
+      var body = '';
+      if (r.menu) {
+        body += '<p class="menu"><b>Понравилось из меню:</b> ' + esc(r.menu) + '</p>';
+      }
+      if (r.comment) {
+        body += '<p class="comment">' + esc(r.comment) + '</p>';
+      }
+
+      item.appendChild(head);
+      if (body) {
+        var div = document.createElement('div');
+        div.innerHTML = body;
+        item.appendChild(div);
+      } else {
+        var noText = document.createElement('p');
+        noText.className = 'comment';
+        noText.textContent = 'Без текстового отзыва.';
+        item.appendChild(noText);
+      }
+      reviewsEl.appendChild(item);
+    });
+  }
+
+  async function loadReviews() {
+    hide(listErrorEl);
+    try {
+      var res = await fetch('/api/reviews');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      renderReviews(await res.json());
+    } catch (e) {
+      setText(listErrorEl, 'Не удалось загрузить отзывы. Проверьте, что сервер запущен (node server.js).');
+      show(listErrorEl);
+    }
+  }
+
+  function resetForm() {
+    form.reset();
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hide(formError);
+    hide(formSuccess);
+
+    var rating = selectedRating();
+    if (!rating) {
+      setText(formError, 'Укажите оценку визита.');
+      show(formError);
+      return;
+    }
+
+    var menu = document.getElementById('menu').value.trim();
+    var comment = document.getElementById('comment').value.trim();
+
+    var menuIssue = validateMenuText(menu);
+    if (menuIssue) {
+      setText(formError, '«Что понравилось из меню»: ' + menuIssue);
+      show(formError);
+      return;
+    }
+    if (isRepetitiveText(comment)) {
+      setText(formError, 'Комментарий выглядит как повторение одинаковых символов — измените текст.');
+      show(formError);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    try {
+      var res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: rating, menu: menu, comment: comment })
+      });
+      if (!res.ok) {
+        var err = await res.json().catch(function () { return { error: 'Ошибка сохранения' }; });
+        throw new Error(err.error || 'Ошибка сохранения');
+      }
+      resetForm();
+      setText(formSuccess, 'Спасибо за отзыв!');
+      show(formSuccess);
+      await loadReviews();
+    } catch (err) {
+      setText(formError, 'Не удалось сохранить отзыв: ' + err.message + '. Проверьте, что сервер запущен.');
+      show(formError);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+var RU_VOWELS = new Set('аеёиоуыэюя'.split(''));
+  var EN_VOWELS = new Set('aeiouy'.split(''));
+  var MIN_REPEAT_LEN = 8;
+  var MAX_REPEAT_RATIO = 0.7;
+
+  function isRepetitiveText(text) {
+    var chars = String(text).replace(/\s+/g, '');
+    if (chars.length < MIN_REPEAT_LEN) return false;
+    var counts = {};
+    var max = 0;
+    for (var i = 0; i < chars.length; i++) {
+      var ch = chars[i].toLowerCase();
+      counts[ch] = (counts[ch] || 0) + 1;
+      if (counts[ch] > max) max = counts[ch];
+    }
+    return max / chars.length >= MAX_REPEAT_RATIO;
+  }
+
+  function isJunkyWordText(text) {
+    var words = String(text).split(/\s+/);
+    for (var w = 0; w < words.length; w++) {
+      var word = words[w];
+      if (word.length < 4) continue;
+      var letters = Array.from(word).filter(function (ch) { return /[a-zа-яё]/i.test(ch); });
+      if (letters.length !== word.length) continue;
+      var cyr = /[а-яё]/i.test(letters[0]);
+      var vowels = letters.filter(function (ch) {
+        var c = ch.toLowerCase();
+        return (cyr ? RU_VOWELS : EN_VOWELS).has(c);
+      }).length;
+      if (vowels / letters.length <= 0.2) return true;
+    }
+    return false;
+  }
+
+  function validateMenuText(text) {
+    if (isRepetitiveText(text)) {
+      return 'текст выглядит как повторение одинаковых символов — укажите позицию из меню.';
+    }
+    if (isJunkyWordText(text)) {
+      return 'текст похож на введённый не в той раскладке (тарабарщина) — укажите позицию из меню.';
+    }
+    return checkLayout(text);
+  }
+
+  function vowelRatio(text, regex, vowels) {
+    var letters = Array.from(text.toLowerCase()).filter(function (ch) { return regex.test(ch); });
+    if (letters.length < 4) return null;
+    var voiced = letters.filter(function (ch) { return vowels.has(ch); }).length;
+    return voiced / letters.length;
+  }
+
+  function checkLayout(text) {
+    if (isRepetitiveText(text)) {
+      return 'Текст выглядит как повторение одинаковых символов — такой отзыв не примем.';
+    }
+    var cyrillic = (text.match(/[а-яё]/gi) || []).length;
+    var latin = (text.match(/[a-z]/gi) || []).length;
+    var ratio;
+    if (latin > 0 && cyrillic === 0) {
+      ratio = vowelRatio(text, /[a-z]/, EN_VOWELS);
+      if (ratio !== null && ratio <= 0.2) {
+        return 'Текст выглядит неразборчивым. Похоже, вы набирали русский текст в английской раскладке — переключите раскладку на русский?';
+      }
+    }
+    if (cyrillic > 0 && latin === 0) {
+      ratio = vowelRatio(text, /[а-яё]/, RU_VOWELS);
+      if (ratio !== null && ratio <= 0.2) {
+        return 'Текст выглядит неразборчивым. Похоже, вы набирали английский текст в русской раскладке — переключите раскладку на английский?';
+      }
+    }
+    return null;
+  }
+
+  function setupLayoutCheck(inputId, warnId, validator) {
+    var input = document.getElementById(inputId);
+    var warn = document.getElementById(warnId);
+    var timer;
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        var msg = (validator || checkLayout)(input.value.trim());
+        warn.textContent = '';
+        if (msg) {
+          warn.textContent = msg;
+          show(warn);
+        } else {
+          hide(warn);
+        }
+      }, 300);
+    });
+  }
+
+  setupLayoutCheck('menu', 'menuWarn', validateMenuText);
+  setupLayoutCheck('comment', 'commentWarn');
+
+  loadReviews();
+</script>
+</body>
+</html>

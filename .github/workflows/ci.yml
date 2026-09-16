@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Проверка синтаксиса сервера
+        run: node --check server.js
+
+      - name: Smoke-тест
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:3000/ >/dev/null 2>&1; then break; fi
+            sleep 0.5
+          done
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/)
+          test "$code" = "200"
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{"rating":5}' http://127.0.0.1:3000/api/reviews)
+          test "$code" = "201"
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{"rating":0}' http://127.0.0.1:3000/api/reviews)
+          test "$code" = "400"
+
+          head -c 1048576 /dev/zero | tr '\0' 'a' > /tmp/big-body.json
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' --data @/tmp/big-body.json http://127.0.0.1:3000/api/reviews)
+          test "$code" = "413"
+
+          echo "smoke: OK"

@@ -1,0 +1,15 @@
+reviews.json
+reviews.json.tmp
+node_modules/
+
+# Конфиденциальное
+.env
+.env.*
+
+# Служебные файлы ОС
+Thumbs.db
+.DS_Store
+
+# Логи и временные файлы
+*.log
+*.tmp

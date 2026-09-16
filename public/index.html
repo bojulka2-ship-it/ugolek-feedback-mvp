@@ -68,8 +68,11 @@
     color: var(--orange);
     transform: scale(1.12);
   }
-  .star-option:has(input:checked) .star-icon,
-  .star-option:has(~ .star-option:has(input:checked)) .star-icon {
+  .star-inputs[data-rating="1"] .star-option:nth-child(-n+1) .star-icon,
+  .star-inputs[data-rating="2"] .star-option:nth-child(-n+2) .star-icon,
+  .star-inputs[data-rating="3"] .star-option:nth-child(-n+3) .star-icon,
+  .star-inputs[data-rating="4"] .star-option:nth-child(-n+4) .star-icon,
+  .star-inputs[data-rating="5"] .star-option:nth-child(-n+5) .star-icon {
     color: var(--orange);
   }
   .star-option:has(input:focus-visible) .star-icon {
@@ -204,6 +207,15 @@
   var reviewsEl = document.getElementById('reviews');
   var emptyEl = document.getElementById('empty');
   var listErrorEl = document.getElementById('listError');
+  var starInputs = document.querySelector('.star-inputs');
+  starInputs.addEventListener('change', function (e) {
+    if (e.target && e.target.name === 'rating' && e.target.checked) {
+      starInputs.setAttribute('data-rating', e.target.value);
+    }
+  });
+  form.addEventListener('reset', function () {
+    starInputs.removeAttribute('data-rating');
+  });
 
   function show(el) { el.classList.add('show'); }
   function hide(el) { el.classList.remove('show'); }
